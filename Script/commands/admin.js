@@ -32,7 +32,7 @@ module.exports.run = async function({ api, event }) {
 ┣━━━━━━━━━━━━━━━━━━━━━┫
 ┃ 🎭 𝐓𝐢𝐤𝐭𝐨𝐤  : নাই
 ┃ 📢 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 : দিবো না 
-┃ 🌐 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 : https://www.facebook.com/profile.php?id=61576990215664
+┃ 🌐 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 : https://www.facebook.com/samir.jasin.9
 ┣━━━━━━━━━━━━━━━━━━━━━┫
 ┃ 🕒 𝐔𝐩𝐝𝐚𝐭𝐞𝐝 𝐓𝐢𝐦𝐞:  ${time}
 ┗━━━━━━━━━━━━━━━━━━━━━┛
