@@ -1,40 +1,103 @@
-/** I am doing this coding with a lot of difficulty, please don't post it yourself¯\_(ツ)_/¯ **/
 module.exports.config = {
-  name: "love",
+  name: "hack",
   version: "1.0.0",
   hasPermssion: 0,
-  credits: "Islamick Chat",
-  description: "story VEDIO",
-  commandCategory: "M H BD",
-  usages: "love7 vedio",
-  cooldowns: 5,
+  credits: "John Lester",
+  description: "hack",
+  commandCategory: "hack",
+  usages: "@mention",
   dependencies: {
-    "request":"",
-    "fs-extra":"",
-    "axios":""
-  }
+        "axios": "",
+        "fs-extra": ""
+  },
+  cooldowns: 0
 };
 
-module.exports.run = async({api,event,args,client,Users,Threads,__GLOBAL,Currencies}) => {
-const axios = global.nodemodule["axios"];
-const request = global.nodemodule["request"];
-const fs = global.nodemodule["fs-extra"];
-   var hi = ["•┄┅════❁🌺❁════┅┄•\n\n - তুমি ভালোবাসা মানে কি বুজ..??\n - আমি তো বুজি বিয়ের পর বউ এর সাথে হালাল ভালোবাসা বা পবিত্র সম্পর্ক কে...🌸🙈😍\n\n•┄┅════❁🌺❁════┅┄•"];
-  var know = hi[Math.floor(Math.random() * hi.length)];
-  var link = [
-"https://drive.google.com/uc?id=1QYWcqg1ijPhtNVlIzDqluKft-jDG22cW",
-"https://drive.google.com/uc?id1Qcmn9WNHtm_JWQOpEZ1qExa5SffoEjji",
-"https://drive.google.com/uc?id=1Q9rvj5eJblhxEBznqGELP3DRLywzOGA6",
-"https://drive.google.com/uc?id=1Q9PfN8ZWd8W7YZGAqSxmXVedj-5zN42_",
-"https://drive.google.com/uc?id=1QWCNSSo_zbZF3Ypfl9rme50_Vgtc1Uhb",
-"https://drive.google.com/uc?id=1QOXQydrqA0RV3z_nD4s4OYuxW8hmpDGF",
-"https://drive.google.com/uc?id=1QPLCEvrfSALGdZ8pNjAEvmeor4AdB72G",
-"https://drive.google.com/uc?id=1QLoecfZzW5UJSbuiJKs0ARudeToKTn11",
-"https://drive.google.com/uc?id=1QV8coP5g26qyJGB-rljHeWYwSwnsQuSu",
-"https://drive.google.com/uc?id=1QTWryt4tlhIMa9NJkOlHHdNdBiodFhc9",
-"https://drive.google.com/uc?id=1QFyKjvumAPH9FlLweTMRN2pWDEfD5HN4",
+module.exports.wrapText = (ctx, name, maxWidth) => {
+	return new Promise(resolve => {
+		if (ctx.measureText(name).width < maxWidth) return resolve([name]);
+		if (ctx.measureText('W').width > maxWidth) return resolve(null);
+		const words = name.split(' ');
+		const lines = [];
+		let line = '';
+		while (words.length > 0) {
+			let split = false;
+			while (ctx.measureText(words[0]).width >= maxWidth) {
+				const temp = words[0];
+				words[0] = temp.slice(0, -1);
+				if (split) words[1] = `${temp.slice(-1)}${words[1]}`;
+				else {
+					split = true;
+					words.splice(1, 0, temp.slice(-1));
+				}
+			}
+			if (ctx.measureText(`${line}${words[0]}`).width < maxWidth) line += `${words.shift()} `;
+			else {
+				lines.push(line.trim());
+				line = '';
+			}
+			if (words.length === 0) lines.push(line.trim());
+		}
+		return resolve(lines);
+	});
+} 
 
+module.exports.run = async function ({ args, Users, Threads, api, event, Currencies }) {
+  const { loadImage, createCanvas } = require("canvas");
+  const fs = global.nodemodule["fs-extra"];
+  const axios = global.nodemodule["axios"];
+  let pathImg = __dirname + "/cache/background.png";
+  let pathAvt1 = __dirname + "/cache/Avtmot.png";
+  
+  
+  var id = Object.keys(event.mentions)[0] || event.senderID;
+  var name = await Users.getNameUser(id);
+  var ThreadInfo = await api.getThreadInfo(event.threadID);
+  
+  var background = [
+
+    "https://i.imgur.com/VQXViKI.png"
 ];
-     var callback = () => api.sendMessage({body:` ${know} `,attachment: fs.createReadStream(__dirname + "/cache/15.mp4")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/15.mp4"));    
-      return request(encodeURI(link[Math.floor(Math.random() * link.length)])).pipe(fs.createWriteStream(__dirname+"/cache/15.mp4")).on("close",() => callback());
-   };
+  var rd = background[Math.floor(Math.random() * background.length)];
+  
+  let getAvtmot = (
+    await axios.get(
+      `https://graph.facebook.com/${id}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
+      { responseType: "arraybuffer" }
+    )
+  ).data;
+  fs.writeFileSync(pathAvt1, Buffer.from(getAvtmot, "utf-8"));
+
+  let getbackground = (
+    await axios.get(`${rd}`, {
+      responseType: "arraybuffer",
+    })
+  ).data;
+  fs.writeFileSync(pathImg, Buffer.from(getbackground, "utf-8"));
+
+  let baseImage = await loadImage(pathImg);
+  let baseAvt1 = await loadImage(pathAvt1);
+ 
+  let canvas = createCanvas(baseImage.width, baseImage.height);
+  let ctx = canvas.getContext("2d");
+  ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+    ctx.font = "400 23px Arial";
+	  ctx.fillStyle = "#1878F3";
+	  ctx.textAlign = "start";
+	  
+	  
+	  const lines = await this.wrapText(ctx, name, 1160);
+	  ctx.fillText(lines.join('\n'), 200,497);//comment
+	  ctx.beginPath();
+
+
+  ctx.drawImage(baseAvt1, 83, 437, 100, 101);
+  
+  const imageBuffer = canvas.toBuffer();
+  fs.writeFileSync(pathImg, imageBuffer);
+  fs.removeSync(pathAvt1);
+  return api.sendMessage({ body: ` `, attachment: fs.createReadStream(pathImg) },
+      event.threadID,
+      () => fs.unlinkSync(pathImg),
+      event.messageID);
+}
