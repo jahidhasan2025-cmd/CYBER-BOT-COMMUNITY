@@ -1,76 +1,74 @@
-const axios = require("axios");
-
-const baseApiUrl = async () => {
- const base = await axios.get(
- `https://raw.githubusercontent.com/Mostakim0978/D1PT0/refs/heads/main/baseApiUrl.json`,
- );
- return base.data.api;
-};
-
 module.exports.config = {
- name: "fbcover",
- version: "6.9",
- hasPermssion: 0,
- credits: "Dipto",
- description: "Facebook cover",
- usePrefix: true,
- prefix: true,
- commandCategory: "Cover",
- category: " cover",
- usages: "name - title - address - email - phone - color (default = white)",
- cooldowns: 5,
+    name: "fuck",
+    version: "7.3.1",
+    hasPermssion: 0,
+    credits: "John Lester",
+    description: "Get fuck",
+    commandCategory: "nsfw",
+    usages: "[@mention]",
+    cooldowns: 5,
+    dependencies: {
+        "axios": "",
+        "fs-extra": "",
+        "path": "",
+        "jimp": ""
+    }
 };
-module.exports.run = async function ({ api, event, args, Users }) {
- const dipto = args.join(" ");
- let id;
- if (event.type === "message_reply") {
- id = event.messageReply.senderID;
- } else {
- id = Object.keys(event.mentions)[0] || event.senderID;
- }
- var nam = await Users.getNameUser(id);
- if (!dipto) {
- return api.sendMessage(
- `❌| wrong \ntry ${global.config.PREFIX}fbcover v1/v2/v3 - name - title - address - email - phone - color (default = white)`,
- event.threadID,
- event.messageID,
- );
- } else {
- const msg = dipto.split("-");
- const v = msg[0].trim() || "v1";
- const name = msg[1].trim() || " ";
- const subname = msg[2].trim() || " ";
- const address = msg[3].trim() || " ";
- const email = msg[4].trim() || " ";
- const phone = msg[5].trim() || " ";
- const color = msg[6].trim() || "white";
- api.sendMessage(
- `Processing your cover,Wait koro baby < 😘`,
- event.threadID,
- (err, info) =>
- setTimeout(() => {
- api.unsendMessage(info.messageID);
- }, 4000),
- );
- const img = `${await baseApiUrl()}/cover/${v}?name=${encodeURIComponent(name)}&subname=${encodeURIComponent(subname)}&number=${encodeURIComponent(phone)}&address=${encodeURIComponent(address)}&email=${encodeURIComponent(email)}&colour=${encodeURIComponent(color)}&uid=${id}`;
 
- try {
- const response = await axios.get(img, { responseType: "stream" });
- const attachment = response.data;
- api.sendMessage(
- {
- body: `✿━━━━━━━━━━━━━━━━━━━━━━━━━━━✿\n🔵𝗙𝗜𝗥𝗦𝗧 𝗡𝗔𝗠𝗘: ${name}\n⚫𝗦𝗘𝗖𝗢𝗡𝗗 𝗡𝗔𝗠𝗘:${subname}\n⚪𝗔𝗗𝗗𝗥𝗘𝗦𝗦: ${address}\n📫𝗠𝗔𝗜𝗟: ${email}\n☎️𝗣𝗛𝗢𝗡𝗘 𝗡𝗢.: ${phone}\n☢️𝗖𝗢𝗟𝗢𝗥: ${color}\n💁𝗨𝗦𝗘𝗥 𝗡𝗔𝗠𝗘: ${nam}\n✅𝗩𝗲𝗿𝘀𝗶𝗼𝗻 : ${v}\n✿━━━━━━━━━━━━━━━━━━━━━━━━━━━✿`,
- attachment,
- },
- event.threadID,
- event.messageID,
- );
- } catch (error) {
- console.error(error);
- api.sendMessage(
- "An error occurred while generating the FB cover.",
- event.threadID,
- );
- }
- }
-};
+module.exports.onLoad = async() => {
+    const { resolve } = global.nodemodule["path"];
+    const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
+    const { downloadFile } = global.utils;
+    const dirMaterial = __dirname + `/cache/canvas/`;
+    const path = resolve(__dirname, 'cache/canvas', 'fuckv2.png');
+    if (!existsSync(dirMaterial + "canvas")) mkdirSync(dirMaterial, { recursive: true });
+    if (!existsSync(path)) await downloadFile("https://i.imgur.com/Ee93Xjb.jpeg", path);
+}
+
+async function makeImage({ one, two }) {
+    const fs = global.nodemodule["fs-extra"];
+    const path = global.nodemodule["path"];
+    const axios = global.nodemodule["axios"]; 
+    const jimp = global.nodemodule["jimp"];
+    const __root = path.resolve(__dirname, "cache", "canvas");
+
+    let batgiam_img = await jimp.read(__root + "/fuckv2.png");
+    let pathImg = __root + `/batman${one}_${two}.png`;
+    let avatarOne = __root + `/avt_${one}.png`;
+    let avatarTwo = __root + `/avt_${two}.png`;
+    
+    let getAvatarOne = (await axios.get(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+    fs.writeFileSync(avatarOne, Buffer.from(getAvatarOne, 'utf-8'));
+    
+    let getAvatarTwo = (await axios.get(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' })).data;
+    fs.writeFileSync(avatarTwo, Buffer.from(getAvatarTwo, 'utf-8'));
+    
+    let circleOne = await jimp.read(await circle(avatarOne));
+    let circleTwo = await jimp.read(await circle(avatarTwo));
+    batgiam_img.composite(circleOne.resize(180, 180), 190, 200).composite(circleTwo.resize(180, 180), 390, 200);
+    
+    let raw = await batgiam_img.getBufferAsync("image/png");
+    
+    fs.writeFileSync(pathImg, raw);
+    fs.unlinkSync(avatarOne);
+    fs.unlinkSync(avatarTwo);
+    
+    return pathImg;
+}
+async function circle(image) {
+    const jimp = require("jimp");
+    image = await jimp.read(image);
+    image.circle();
+    return await image.getBufferAsync("image/png");
+}
+
+module.exports.run = async function ({ event, api, args }) {    
+    const fs = global.nodemodule["fs-extra"];
+    const { threadID, messageID, senderID } = event;
+    const mention = Object.keys(event.mentions);
+    if (!mention[0]) return api.sendMessage("Please mention 1 person.", threadID, messageID);
+    else {
+        const one = senderID, two = mention[0];
+        return makeImage({ one, two }).then(path => api.sendMessage({ body: "", attachment: fs.createReadStream(path) }, threadID, () => fs.unlinkSync(path), messageID));
+    }
+}
