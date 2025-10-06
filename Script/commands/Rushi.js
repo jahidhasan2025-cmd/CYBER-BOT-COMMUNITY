@@ -1,30 +1,26 @@
 module.exports.config = {
- name: "rushia",
- version: "1.0.0",
- hasPermssion: 0,
- credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
- description: "Random Rushia",
- commandCategory: "random-img",
- usages: "rushia",
- cooldowns: 3
+	name: "sendmsg",
+	version: "1.0.7",
+	hasPermssion: 2,
+	credits: "manhG",
+	description: "sendmsg [uid] [text]",
+	commandCategory: "admin",
+	usages: "ID [Text]",
+	cooldowns: 5
 };
 
-module.exports.run = async ({ api, event }) => {
- const axios = require('axios');
- const request = require('request');
- const fs = require("fs");
- axios.get('https://saikiapi-v3-production.up.railway.app/holo/rushia').then(res => {
- let ext = res.data.url.substring(res.data.url.lastIndexOf(".") + 1);
- let callback = function () {
-     api.sendMessage({
-      attachment: fs.createReadStream(__dirname + `/cache/rushia.${ext}`)
-     }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/rushia.${ext}`), event.messageID);
-   api.setMessageReaction("✅", event.messageID, (err) => {}, true);
-    };
-    request(res.data.url).pipe(fs.createWriteStream(__dirname + `/cache/rushia.${ext}`)).on("close", callback);
-   })
-      .catch(err => {
-                     api.sendMessage("there's something problem while generating photo, please try again!", event.threadID, event.messageID);
-    api.setMessageReaction("☹️", event.messageID, (err) => {}, true);
-                  })    
+module.exports.run = async ({ api, event, args }) => {
+ //if (!args[0]) return api.sendMessage(`${api.getthreadID()}`, event.threadID);
+    
+	var idbox = args[0];
+    var reason = args.slice(1);
+	//let threadID = await api.getThreadID();
+	if (args.length == 0) api.sendMessage("Syntax error, use: sendmsg ID_BOX [messsage]", event.threadID, event.messageID);
+	
+	else if(reason == "")api.sendMessage("Syntax error, use: sendmsg ID_BOX [message]", event.threadID, event.messageID);
+	
+	else
+		api.sendMessage("Message from the Admin \n\n" + reason.join(" "), idbox, () =>
+			api.sendMessage(`${api.getCurrentUserID()}`, () =>
+				api.sendMessage("Sent message: " + reason.join(" "), event.threadID)));
 }
